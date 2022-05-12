@@ -6,20 +6,6 @@ require('dotenv').config();
 const typeDefs = require('./src/typedef');
 const resolvers = require('./src/resolver');
 
-// // GraphQL Code
-// const typeDefs = `
-// 	type Query {
-// 		totalPosts: Int!
-// 	}
-// `;
-
-// //resolvers
-// const resolvers = {
-// 	Query: {
-// 		totalPosts: () => 42,
-// 	},
-// };
-
 // Note that by default a GraphQL playground is enabled unless NODE_ENV=production
 const apolloServer = new ApolloServer({
 	typeDefs,
@@ -45,6 +31,42 @@ app.get('/rest2', async (req, res) => {
 		}`,
 	})
 	res.json(value.data);
+});
+
+app.get('/rest3', async (req, res) => {
+    const value = await apolloServer.executeOperation({
+        query: `query FetchPostsByAuthor($id: Int!) {
+            author(id: $id) {
+                id
+                firstName
+                posts {
+                    id
+                    title
+                }
+            }
+        }`,
+        variables: { id: 2 }
+    })
+    console.log(JSON.stringify(value, null, 2));
+    res.json(value.data);
+});
+
+app.get('/rest4', async (req, res) => {
+    const value = await apolloServer.executeOperation({
+        query: `query FetchPostsByAuthor {
+            author {
+                id
+                firstName
+                posts {
+                    id
+                    title
+                }
+            }
+        }`,
+        variables: { id: 2 }
+    })
+    console.log(JSON.stringify(value, null, 2));
+    res.json(value.data);
 });
 
 /*

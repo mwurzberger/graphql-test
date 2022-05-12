@@ -14,7 +14,16 @@ const posts = [
 const fakeDb = {
     Query: {
         posts: () => posts,
-        author: (_, { id }) => find(authors, { id }),
+        post: ({id}) => {
+            const post = find(posts, { id });
+            return post;
+        },
+        authors: () => authors,
+        author: (_, { id }) => {
+            const author = find(authors, { id });
+            author.posts = filter(posts, {authorId: author.id});
+            return author;
+        },
     },
     Mutation: {
         createPost: (_, newPost) => {
